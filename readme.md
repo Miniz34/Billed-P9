@@ -1,3 +1,3 @@
 ## Billed-app
 
-Tri chronologique factures
+Restriction upload images
