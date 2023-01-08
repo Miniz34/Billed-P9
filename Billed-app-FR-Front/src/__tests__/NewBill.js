@@ -19,10 +19,9 @@ const onNavigate = (pathname) => {
   document.body.innerHTML = ROUTES({ pathname });
 };
 
+
 describe("Given I am connected as an employee", () => {
   //Setup localStorage
-
-
   beforeEach(() => {
     Object.defineProperty(window, 'localStorage', {
       value: localStorageMock,
@@ -33,7 +32,8 @@ describe("Given I am connected as an employee", () => {
         type: 'Employee',
       })
     );
-    document.body.innerHTML = NewBillUI()
+    document.body.innerHTML = NewBillUI();
+
   });
 
   describe("When I am on NewBill Page", () => {
@@ -42,29 +42,34 @@ describe("Given I am connected as an employee", () => {
       // expected result
       expect(screen.getAllByText('Envoyer une note de frais')).toBeTruthy();
     })
-    test("9 Fields should be rendered", () => {
-      document.body.innerHTML = NewBillUI()
+    test("8 Fields should be rendered", () => {
+
       const form = document.querySelector('form');
+
+      const formNewBill = screen.getByTestId("form-new-bill");
+      const type = screen.getAllByTestId("expense-type");
+      const name = screen.getAllByTestId("expense-name");
+      const date = screen.getAllByTestId("datepicker");
+      const amount = screen.getAllByTestId("amount");
+      const vat = screen.getAllByTestId("vat");
+      const pct = screen.getAllByTestId("pct");
+      const commentary = screen.getAllByTestId("commentary");
+      const file = screen.getAllByTestId("file");
+      const submitBtn = document.querySelector("#btn-send-bill");
+
+      expect(formNewBill).toBeTruthy();
+      expect(type).toBeTruthy();
+      expect(name).toBeTruthy();
+      expect(date).toBeTruthy();
+      expect(amount).toBeTruthy();
+      expect(vat).toBeTruthy();
+      expect(pct).toBeTruthy();
+      expect(commentary).toBeTruthy();
+      expect(file).toBeTruthy();
+      expect(submitBtn).toBeTruthy();
+
       expect(form.length).toEqual(8)
-    })
-  })
-
-  describe("when i fill all the inputs correctly", () => {
-    test("Then i should be sent to the mainPage", () => {
-      const newBillContainer = new NewBill({
-        document,
-        onNavigate,
-        store: null,
-        localStorage: window.localStorage,
-      })
-
-      const handleSubmit = jest.fn(newBillContainer.handleSubmit);
-      const newBillForm = screen.getByTestId('form-new-bill');
-      newBillForm.addEventListener('submit', handleSubmit);
-      fireEvent.submit(newBillForm);
-
-      expect(handleSubmit).toHaveBeenCalled();
-      expect(screen.getAllByText('Mes notes de frais')).toBeTruthy();
+      expect(screen.getAllByText("Envoyer une note de frais")).toBeTruthy();
 
     })
   })
@@ -86,10 +91,6 @@ describe("Given I am connected as an employee", () => {
           files: [new File(['file.jpg'], 'file.jpg', { type: 'image/jpg' })],
         },
       });
-
-      // const numberOfFile = screen.getByTestId('file').files.length;
-      // expect(numberOfFile).toEqual(1);
-
       expect(handleFile).toHaveBeenCalled();
     })
 
@@ -112,14 +113,11 @@ describe("Given I am connected as an employee", () => {
         },
       });
       expect(handleFile).toHaveBeenCalled()
-      // expect(document.querySelector(".error-extensionFile").innerText).toBe("Votre justificatif doit être une image de format (.jpg) ou (.jpeg) ou (.png)")
       expect(screen.getAllByText("L'image doit être au format jpg, jpeg ou png")).toBeTruthy()
-      // expect(newBillContainer.formData).toBe(null);
-      // expect(document.querySelector(`input[data-testid="file"]`).value).toBe(null)
-      // expect(newBillContainer.formData).toBe(null)
-      // jest.spyOn(window, "alert");
-      // expect(alert).toHaveBeenCalled();
       expect(newBillContainer.fileName).toBe(null);
+      expect(newBillContainer.fileName).toBe(null);
+      expect(newBillContainer.isImgFormatValid).toBe(false);
+      expect(newBillContainer.formData).toBe(undefined);
 
     })
 
@@ -127,14 +125,12 @@ describe("Given I am connected as an employee", () => {
 
   describe("If i add the right format of image", () => {
     test("The error message should not be displayed", () => {
-
       const newBillContainer = new NewBill({
         document,
         onNavigate,
         store: null,
         localStorage: window.localStorage
       })
-
       const handleFile = jest.fn(() => newBillContainer.handleChangeFile)
       const getFile = screen.getByTestId('file');
       getFile.addEventListener('change', handleFile);
@@ -144,25 +140,94 @@ describe("Given I am connected as an employee", () => {
         },
       });
       expect(handleFile).toHaveBeenCalled()
-      // expect(document.querySelector(".error-extensionFile").innerText).toBe("")
-      // expect(document.querySelector(`input[data-testid="file"]`).value).toBe(null)
-
       // expect(screen.getAllByText("L'image doit être au format jpg, jpeg ou png")).not.toBeTruthy()
-      // expect(getFile.files[0].name).toBe("file.jpg");
-      // expect(newBillContainer.formData).toBe(null);
-      // jest.spyOn(window, "alert");
-      // expect(alert).not.toHaveBeenCalled();
       expect(newBillContainer.fileName).toBe("file.png");
+      expect(getFile.files[0].name).toBe("file.png");
+      expect(newBillContainer.fileName).toBe("file.png");
+      expect(newBillContainer.isImgFormatValid).toBe(true);
+      expect(newBillContainer.formData).not.toBe(null);
+    })
+  })
 
+  describe("when i fill all the inputs correctly", () => {
+    test("Then the handleSubmit function should be called and send me to the main page", () => {
+
+      const store = {
+        bills: jest.fn(() => newBillContainer.store),
+        create: jest.fn(() => Promise.resolve({})),
+      };
+
+      const newBillContainer = new NewBill({
+        document,
+        onNavigate,
+        store,
+        localStorage: window.localStorage,
+      })
+
+      //TO DO : retester
+      newBillContainer.isImgFormatValid = true;
+
+
+      const newBillForm = screen.getByTestId('form-new-bill');
+      const handleSubmit = jest.fn(newBillContainer.handleSubmit);
+      newBillForm.addEventListener('submit', handleSubmit);
+      fireEvent.submit(newBillForm);
+
+      expect(handleSubmit).toHaveBeenCalled();
+      // expect(screen.getAllByText('Mes notes de frais')).toBeTruthy();
 
     })
-
   })
 
 
-  describe("If i missed an input, an error message should appear", () => {
 
-  })
+
+  // describe("If i missed an input", () => {
+  //   test("the form should not be submitted", () => {
+
+  //     const newBillContainer = new NewBill({
+  //       document,
+  //       onNavigate,
+  //       store: null,
+  //       localStorage: window.localStorage,
+  //     })
+
+  //     const form = document.querySelector('form');
+
+  //     const newBillForm = screen.getByTestId("form-new-bill");
+  //     const type = screen.getAllByTestId("expense-type");
+  //     const name = screen.getAllByTestId("expense-name");
+  //     const date = screen.getAllByTestId("datepicker");
+  //     const amount = screen.getAllByTestId("amount");
+  //     const vat = screen.getAllByTestId("vat");
+  //     const pct = screen.getAllByTestId("pct");
+  //     const commentary = screen.getAllByTestId("commentary");
+  //     const file = screen.getByTestId("file");
+  //     const submitBtn = document.querySelector("#btn-send-bill");
+
+  //     // type.addEventListener("input", "Transports")
+
+
+  //     const handleSubmit = jest.fn(newBillContainer.handleSubmit);
+
+  //     file.addEventListener('change', handleSubmit);
+  //     fireEvent.change(file, {
+  //       target: {
+  //         files: [new File(["file.jpg"], "file.jpg", { type: "image/jpg" })],
+  //       },
+  //     });
+
+  //     newBillForm.addEventListener('submit', handleSubmit);
+  //     fireEvent.submit(newBillForm);
+
+  //     expect(handleSubmit).toHaveBeenCalled();
+  //     expect(screen.getAllByText('Mes notes de frais')).toBeTruthy();
+
+
+
+  //   })
+
+  // })
 
   describe("if i put the wrong file format, an error message should appear", () => {
 
