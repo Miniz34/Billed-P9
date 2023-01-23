@@ -89,8 +89,6 @@ describe("Given I am connected as an employee", () => {
 })
 
 
-//TODO
-
 describe("Given I am a user connected as Employee", () => {
   describe("When I navigate to Bill", () => {
     let newBillContainer;
@@ -142,6 +140,11 @@ describe("Given I am a user connected as Employee", () => {
         expect(waitFor(() => screen.getByText(r.date))).toBeTruthy()
       })
     });
+
+
+    //TODO
+    //+TODO afficher nom premier ticket
+    //demande d'informations http://127.0.0.1:8080/coverage/lcov-report/
 
     // test("fetches bills from an API and fails with 404 message error", async () => {
 
