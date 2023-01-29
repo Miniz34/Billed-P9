@@ -88,7 +88,6 @@ describe("Given I am connected as an employee", () => {
   })
 })
 
-
 describe("Given I am a user connected as Employee", () => {
   describe("When I navigate to Bill", () => {
     let newBillContainer;
@@ -112,12 +111,6 @@ describe("Given I am a user connected as Employee", () => {
         localStorage: window.localStorage
       })
       window.onNavigate(ROUTES_PATH.Bills);
-
-
-      // const root = document.createElement("div");
-      // root.setAttribute("id", "root");
-      // document.body.appendChild(root);
-      // router();
     });
 
     test(`Then i'm redirected to the page "Bills"`, async () => {
@@ -140,39 +133,79 @@ describe("Given I am a user connected as Employee", () => {
         expect(waitFor(() => screen.getByText(r.date))).toBeTruthy()
       })
     });
-
-
-    //TODO
-    //+TODO afficher nom premier ticket
-    //demande d'informations http://127.0.0.1:8080/coverage/lcov-report/
-
-    // test("fetches bills from an API and fails with 404 message error", async () => {
-
-    //   mockStore.bills.mockImplementationOnce(() => {
-    //     return {
-    //       list: () => {
-    //         return Promise.reject(new Error("Erreur 404"))
-    //       }
-    //     }
-    //   })
-    //   window.onNavigate(ROUTES_PATH.Bills)
-    //   await new Promise(process.nextTick);
-    //   const message = await waitFor(() => screen.getByText(/Erreur 404/))
-    //   expect(message).toBeTruthy()
-    // })
-
-    // test("Then, fetches messages from an API and fails with 500 message error", async () => {
-    //   mockStore.bills.mockImplementationOnce(() => {
-    //     return {
-    //       list: () => {
-    //         return Promise.reject(new Error("Erreur 500"));
-    //       },
-    //     };
-    //   });
-    //   window.onNavigate(ROUTES_PATH.Bills);
-    //   await new Promise(process.nextTick);
-    //   const message = await screen.getByText(/Erreur 500/);
-    //   expect(message).toBeTruthy();
-    // });
   });
 });
+
+
+describe("Given I am a user connected as Employee", () => {
+  describe("When I navigate to Bills", () => {
+    beforeEach(() => {
+      jest.spyOn(mockStore, "bills");
+      Object.defineProperty(window, "localStorage", { value: localStorageMock });
+      window.localStorage.setItem(
+        "user",
+        JSON.stringify({
+          type: "Employee",
+          email: "a@a",
+        })
+      );
+      const root = document.createElement("div");
+      root.setAttribute("id", "root");
+      document.body.appendChild(root);
+      router();
+    });
+    test("Then, fetches bills from mock API GET", async () => {
+      window.onNavigate(ROUTES_PATH.Bills);
+      expect(screen.getAllByText("Billed")).toBeTruthy();
+      expect(await waitFor(() => screen.getByText("Mes notes de frais"))).toBeTruthy();
+      expect(screen.getByTestId("tbody")).toBeTruthy();
+      expect(screen.getAllByText("test1")).toBeTruthy();
+
+    })
+    describe("When an error occurs on API", () => {
+      beforeEach(() => {
+        jest.spyOn(mockStore, "bills")
+        Object.defineProperty(
+          window,
+          'localStorage',
+          { value: localStorageMock }
+        )
+        window.localStorage.setItem('user', JSON.stringify({
+          type: 'Employee',
+          email: "a@a"
+        }))
+        const root = document.createElement("div")
+        root.setAttribute("id", "root")
+        document.body.appendChild(root)
+        router()
+      })
+      test("fetches bills from an API and fails with 404 message error", async () => {
+
+        mockStore.bills.mockImplementationOnce(() =>
+          Promise.reject(new Error('Erreur 404'))
+        );
+        document.body.innerHTML = BillsUI({ error: 'Erreur 404' });
+        window.onNavigate(ROUTES_PATH.Bills)
+        await new Promise(process.nextTick);
+        const message = await screen.getByText(/Erreur 404/)
+        expect(message).toBeTruthy()
+      })
+
+      test("fetches messages from an API and fails with 500 message error", async () => {
+
+        mockStore.bills.mockImplementationOnce(() =>
+          Promise.reject(new Error('Erreur 500'))
+        );
+
+        document.body.innerHTML = BillsUI({ error: 'Erreur 500' });
+
+
+        window.onNavigate(ROUTES_PATH.Bills)
+        await new Promise(process.nextTick);
+        const message = await screen.getByText(/Erreur 500/)
+        expect(message).toBeTruthy()
+      })
+    })
+
+  })
+})
