@@ -33,19 +33,14 @@ describe("Given I am connected as an employee", () => {
       })
     );
     document.body.innerHTML = NewBillUI();
-
   });
 
   describe("When I am on NewBill Page", () => {
     test("Then it should renders NewBillPage", () => {
-
-      // expected result
       expect(screen.getAllByText('Envoyer une note de frais')).toBeTruthy();
     })
     test("8 Fields should be rendered", () => {
-
       const form = document.querySelector('form');
-
       const formNewBill = screen.getByTestId("form-new-bill");
       const type = screen.getAllByTestId("expense-type");
       const name = screen.getAllByTestId("expense-name");
@@ -67,11 +62,8 @@ describe("Given I am connected as an employee", () => {
       expect(commentary).toBeTruthy();
       expect(file).toBeTruthy();
       expect(submitBtn).toBeTruthy();
-
       expect(screen.getAllByText("Envoyer une note de frais")).toBeTruthy();
-
     })
-
 
     describe("if i put the right file format", () => {
       test("Then the function handleChangeFile should be called", () => {
@@ -81,7 +73,6 @@ describe("Given I am connected as an employee", () => {
           store: null,
           localStorage: window.localStorage
         })
-
         const handleFile = jest.fn(() => newBillContainer.handleChangeFile)
         const getFile = screen.getByTestId('file');
         getFile.addEventListener('change', handleFile);
@@ -92,33 +83,48 @@ describe("Given I am connected as an employee", () => {
         });
         expect(handleFile).toHaveBeenCalled();
       })
-
     })
 
-    describe("If i add the wrong format of image,", () => {
-      test("Then the error message should be displayed", () => {
-        const newBillContainer = new NewBill({
+    describe("When I open the file requester,", () => {
+      let newBillContainer, handleFile, getFile;
+      beforeEach(() => {
+        newBillContainer = new NewBill({
           document,
           onNavigate,
           store: null,
           localStorage: window.localStorage
         })
-        const handleFile = jest.fn(() => newBillContainer.handleChangeFile)
-        const getFile = screen.getByTestId('file');
+        handleFile = jest.fn(() => newBillContainer.handleChangeFile)
+        getFile = screen.getByTestId('file');
         getFile.addEventListener('change', handleFile);
-        fireEvent.change(getFile, {
-          target: {
-            files: [new File(['file.pdf'], 'file.pdf', { type: 'image/pdf' })]
-          },
-        });
-        expect(handleFile).toHaveBeenCalled()
-        expect(screen.getAllByText("L'image doit être au format jpg, jpeg ou png")).toBeTruthy()
-        expect(newBillContainer.fileName).toBe(null);
-        // expect(newBillContainer.isImgFormatValid).toBe(false);
-        expect(newBillContainer.formData).toBe(undefined);
-
       })
 
+      describe("If i add the wrong format of image,", () => {
+        test("Then the error message should be displayed", () => {
+          fireEvent.change(getFile, {
+            target: {
+              files: [new File(['file.pdf'], 'file.pdf', { type: 'image/pdf' })]
+            },
+          });
+          expect(handleFile).toHaveBeenCalled()
+          expect(screen.getAllByText("L'image doit être au format jpg, jpeg ou png")).toBeTruthy()
+          expect(newBillContainer.fileName).toBe(null);
+          expect(newBillContainer.formData).toBe(undefined);
+        })
+      })
+
+      describe("If no file is provided", () => {
+        test("Then the formData is not fullfilled", () => {
+          fireEvent.change(getFile, {
+            target: {
+              files: []
+            },
+          });
+          expect(handleFile).toHaveBeenCalled()
+          expect(newBillContainer.fileName).toBe(null);
+          expect(newBillContainer.formData).toBe(undefined);
+        })
+      })
     })
 
     describe("If i add the right format of image", () => {
@@ -145,17 +151,16 @@ describe("Given I am connected as an employee", () => {
         expect(newBillContainer.formData).not.toBe(null);
       })
     })
+
     //test d'intégration
     describe("when i fill all the inputs correctly", () => {
       test("Then the handleSubmit function should be called and send me to the main page", async () => {
-
         const newBillContainer = new NewBill({
           document,
           onNavigate,
           store: mockStore,
           localStorage: window.localStorage,
         })
-
         const handleChangeFile = jest.spyOn(newBillContainer, 'handleChangeFile');
         const file = screen.getByTestId('file');
         file.addEventListener('change', newBillContainer.handleChangeFile)
@@ -184,12 +189,11 @@ describe("Given I am connected as an employee", () => {
         })
       })
     })
-
   })
 })
 
-describe("When I navigate to Dashboard employee", () => {
-  describe("Given I am a user connected as Employee, and a user post a newBill", () => {
+describe("Given I am a user connected as Employee", () => {
+  describe("Given a user post a NewBill", () => {
     test("Add a bill from mock API POST", async () => {
       const postSpy = jest.spyOn(mockStore, "bills");
       const bill = {
@@ -211,6 +215,7 @@ describe("When I navigate to Dashboard employee", () => {
       expect(postSpy).toHaveBeenCalledTimes(1);
       expect(postBills).toStrictEqual(bill);
     });
+
     describe("When an error occurs on API", () => {
       beforeEach(() => {
         window.localStorage.setItem(
@@ -219,9 +224,7 @@ describe("When I navigate to Dashboard employee", () => {
             type: "Employee",
           })
         );
-
         document.body.innerHTML = NewBillUI();
-
       });
       test("Add bills from an API and fails with 404 message error", async () => {
         const postSpy = jest.spyOn(console, "error");
@@ -238,7 +241,6 @@ describe("When I navigate to Dashboard employee", () => {
         const form = screen.getByTestId("form-new-bill");
         const handleSubmit = jest.fn((e) => newBill.handleSubmit(e));
         form.addEventListener("submit", handleSubmit);
-
         fireEvent.submit(form);
         await new Promise(process.nextTick);
         expect(postSpy).toBeCalledWith(new Error("404"));
@@ -252,12 +254,10 @@ describe("When I navigate to Dashboard employee", () => {
         };
         const newBill = new NewBill({ document, onNavigate, store, localStorage });
         newBill.isImgFormatValid = true;
-
         // Submit form
         const form = screen.getByTestId("form-new-bill");
         const handleSubmit = jest.fn((e) => newBill.handleSubmit(e));
         form.addEventListener("submit", handleSubmit);
-
         fireEvent.submit(form);
         await new Promise(process.nextTick);
         expect(postSpy).toBeCalledWith("500");

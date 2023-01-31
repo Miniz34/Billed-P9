@@ -20,7 +20,7 @@ export default class NewBill {
   handleChangeFile = (e) => {
     e.preventDefault();
     const file = this.document.querySelector(`input[data-testid="file"]`).files[0];
-    if (!file) return;
+    if (!file) return false;
 
     const fileName = file.name;
     // new variables needed to check image format
@@ -49,6 +49,7 @@ export default class NewBill {
       formData.append("email", email);
       this.formData = formData; // so it can be used in other methods
       this.fileName = fileName;
+      return true
     } else {
       // if image format is not valid ...
       fileInput.value = ""; // ... remove file from the input
@@ -56,6 +57,7 @@ export default class NewBill {
       fileInput.classList.remove("blue-border"); // ... remove blue-border class
       error.style.display = "block" // ... add error msg
       alert("Le format de votre fichier n'est pas pris en charge." + "\n" + "Seuls les .jpg, .jpeg, .png sont acceptés."); // Error message for user
+      return false
     }
 
   };
@@ -98,7 +100,7 @@ export default class NewBill {
         .then(() => {
           this.updateBill(bill);
         })
-        .catch((error) => console.error(error));
+      // .catch((error) => console.error(error));
     }
 
 

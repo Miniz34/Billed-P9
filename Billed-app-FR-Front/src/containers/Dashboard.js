@@ -147,10 +147,7 @@ export default class {
 
     //Fix opening bill with several container open
     bills.forEach(bill => {
-      // $(`#open-bill${bill.id}`).click((e) => this.handleEditTicket(e, bill, bills));
-      $(`#status-bills-container${this.index} #open-bill${bill.id}`).click((e) => this.handleEditTicket(e, bill, bills));
-
-      // console.log(this.index, bill.id)
+      $(`#open-bill${bill.id}`).click((e) => this.handleEditTicket(e, bill, bills));
     })
 
     return bills
