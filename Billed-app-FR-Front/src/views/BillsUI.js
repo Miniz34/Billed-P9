@@ -4,6 +4,7 @@ import LoadingPage from "./LoadingPage.js"
 
 import Actions from './Actions.js'
 
+
 const row = (bill) => {
   return (`
     <tr>
@@ -19,15 +20,26 @@ const row = (bill) => {
     `)
 }
 
-const sortBills = (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-
-const rows = (data) => {
-  return (data && data.length) ? data.sort(sortBills).map(bill => row(bill)).join("") : ""
-}
+// const sortBills = (a, b) => {
+//   new Date(b.date).getTime() - new Date(a.date).getTime()
+//   // console.log(new Date(b.date))
+//   console.log(new Date(a.date))
+// }
 
 // const rows = (data) => {
-//   return (data && data.length) ? data.map(bill => row(bill)).join("") : ""
+//   return (data && data.length) ? data.sort(sortBills).map(bill => row(bill)).join("") : ""
 // }
+const rows = (data) => {
+  if (data && data.length) {
+    data.sort((a, b) => {
+      // console.log(new Date(a.date))
+      return new Date(b.date) - new Date(a.date)
+    });
+    return data.map(bill => row(bill)).join("");
+  }
+  return "";
+}
+
 
 export default ({ data: bills, loading, error }) => {
 

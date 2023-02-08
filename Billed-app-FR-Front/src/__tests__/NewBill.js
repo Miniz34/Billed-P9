@@ -228,7 +228,6 @@ describe("Given I am a user connected as Employee", () => {
       });
       test("Add bills from an API and fails with 404 message error", async () => {
         const postSpy = jest.spyOn(console, "error");
-
         const store = {
           bills: jest.fn(() => newBill.store),
           create: jest.fn(() => Promise.resolve({})),
@@ -262,6 +261,20 @@ describe("Given I am a user connected as Employee", () => {
         await new Promise(process.nextTick);
         expect(postSpy).toBeCalledWith("500");
       });
+
+      test("Then it fails with a 404 message error", async () => {
+        const html = BillsUI({ error: 'Erreur 404' })
+        document.body.innerHTML = html;
+        const message = await screen.getByText(/Erreur 404/);
+        expect(message).toBeTruthy();
+      })
+      test("Then it fails with a 405 message error", async () => {
+        const html = BillsUI({ error: 'Erreur 405' })
+        document.body.innerHTML = html;
+        const message = await screen.getByText(/Erreur 405/);
+        expect(message).toBeTruthy();
+      })
+
     });
   });
 });

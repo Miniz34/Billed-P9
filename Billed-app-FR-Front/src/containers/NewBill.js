@@ -1,6 +1,7 @@
 import { ROUTES_PATH } from '../constants/routes.js'
 import Logout from "./Logout.js"
 import NewBillUI from "../views/NewBillUI.js"
+import { formatDate } from '../app/format.js';
 
 
 export default class NewBill {
@@ -64,8 +65,6 @@ export default class NewBill {
 
   handleSubmit = e => {
     e.preventDefault()
-    console.log('e.target.querySelector(`input[data-testid="datepicker"]`).value', e.target.querySelector(`input[data-testid="datepicker"]`).value)
-
     // if image format is valid ...
     if (this.isImgFormatValid) {
       const email = JSON.parse(localStorage.getItem("user")).email
@@ -74,7 +73,7 @@ export default class NewBill {
         type: e.target.querySelector(`select[data-testid="expense-type"]`).value,
         name: e.target.querySelector(`input[data-testid="expense-name"]`).value,
         amount: parseInt(e.target.querySelector(`input[data-testid="amount"]`).value),
-        date: e.target.querySelector(`input[data-testid="datepicker"]`).value,
+        date: formatDate(e.target.querySelector(`input[data-testid="datepicker"]`).value),
         vat: e.target.querySelector(`input[data-testid="vat"]`).value,
         pct: parseInt(e.target.querySelector(`input[data-testid="pct"]`).value) || 20,
         commentary: e.target.querySelector(`textarea[data-testid="commentary"]`).value,
@@ -82,6 +81,7 @@ export default class NewBill {
         fileName: this.fileName,
         status: 'pending'
       }
+      console.log(bill.date)
 
       // ... move in handleSubmit to upload image and create new bill only when image format is valid and form is complete
       this.store
