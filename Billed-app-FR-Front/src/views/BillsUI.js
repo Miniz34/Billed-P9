@@ -33,7 +33,9 @@ const rows = (data) => {
   if (data && data.length) {
     data.sort((a, b) => {
       // console.log(new Date(a.date))
-      return new Date(b.date) - new Date(a.date)
+      // return new Date(b.date) - new Date(a.date)
+      return new Date(b.originDate ?? b.date) - new Date(a.originDate ?? a.date)
+
     });
     return data.map(bill => row(bill)).join("");
   }

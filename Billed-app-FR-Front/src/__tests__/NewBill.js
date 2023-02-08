@@ -226,54 +226,42 @@ describe("Given I am a user connected as Employee", () => {
         );
         document.body.innerHTML = NewBillUI();
       });
-      // test("Add bills from an API and fails with 404 message error", async () => {
-      //   const postSpy = jest.spyOn(console, "error");
-      //   const store = {
-      //     bills: jest.fn(() => newBill.store),
-      //     create: jest.fn(() => Promise.resolve({})),
-      //     update: jest.fn(() => Promise.reject(new Error("404"))),
-      //   };
-      //   const newBill = new NewBill({ document, onNavigate, store, localStorage });
-      //   newBill.isImgFormatValid = true;
+      /* Testing the error handling of the form. */
+      test("Add bills from an API and fails with 404 message error", async () => {
+        const postSpy = jest.spyOn(console, "error");
+        const store = {
+          bills: jest.fn(() => newBill.store),
+          create: jest.fn(() => Promise.resolve({})),
+          update: jest.fn(() => Promise.reject(new Error("404"))),
+        };
+        const newBill = new NewBill({ document, onNavigate, store, localStorage });
+        newBill.isImgFormatValid = true;
 
-      //   // Submit form
-      //   const form = screen.getByTestId("form-new-bill");
-      //   const handleSubmit = jest.fn((e) => newBill.handleSubmit(e));
-      //   form.addEventListener("submit", handleSubmit);
-      //   fireEvent.submit(form);
-      //   await new Promise(process.nextTick);
-      //   expect(postSpy).toBeCalledWith(new Error("404"));
-      // });
-      // test("Add bills from an API and fails with 500 message error", async () => {
-      //   const postSpy = jest.spyOn(console, "error");
-      //   const store = {
-      //     bills: jest.fn(() => newBill.store),
-      //     create: jest.fn(() => Promise.resolve({})),
-      //     update: jest.fn(() => Promise.reject("500")),
-      //   };
-      //   const newBill = new NewBill({ document, onNavigate, store, localStorage });
-      //   newBill.isImgFormatValid = true;
-      //   // Submit form
-      //   const form = screen.getByTestId("form-new-bill");
-      //   const handleSubmit = jest.fn((e) => newBill.handleSubmit(e));
-      //   form.addEventListener("submit", handleSubmit);
-      //   fireEvent.submit(form);
-      //   await new Promise(process.nextTick);
-      //   expect(postSpy).toBeCalledWith("500");
-      // });
-
-      test("Then it fails with a 404 message error", async () => {
-        const html = BillsUI({ error: 'Erreur 404' })
-        document.body.innerHTML = html;
-        const message = await screen.getByText(/Erreur 404/);
-        expect(message).toBeTruthy();
-      })
-      test("Then it fails with a 405 message error", async () => {
-        const html = BillsUI({ error: 'Erreur 405' })
-        document.body.innerHTML = html;
-        const message = await screen.getByText(/Erreur 405/);
-        expect(message).toBeTruthy();
-      })
+        // Submit form
+        const form = screen.getByTestId("form-new-bill");
+        const handleSubmit = jest.fn((e) => newBill.handleSubmit(e));
+        form.addEventListener("submit", handleSubmit);
+        fireEvent.submit(form);
+        await new Promise(process.nextTick);
+        expect(postSpy).toBeCalledWith(new Error("404"));
+      });
+      test("Add bills from an API and fails with 500 message error", async () => {
+        const postSpy = jest.spyOn(console, "error");
+        const store = {
+          bills: jest.fn(() => newBill.store),
+          create: jest.fn(() => Promise.resolve({})),
+          update: jest.fn(() => Promise.reject("500")),
+        };
+        const newBill = new NewBill({ document, onNavigate, store, localStorage });
+        newBill.isImgFormatValid = true;
+        // Submit form
+        const form = screen.getByTestId("form-new-bill");
+        const handleSubmit = jest.fn((e) => newBill.handleSubmit(e));
+        form.addEventListener("submit", handleSubmit);
+        fireEvent.submit(form);
+        await new Promise(process.nextTick);
+        expect(postSpy).toBeCalledWith("500");
+      });
 
     });
   });
