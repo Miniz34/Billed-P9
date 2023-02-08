@@ -20,20 +20,9 @@ const row = (bill) => {
     `)
 }
 
-// const sortBills = (a, b) => {
-//   new Date(b.date).getTime() - new Date(a.date).getTime()
-//   // console.log(new Date(b.date))
-//   console.log(new Date(a.date))
-// }
-
-// const rows = (data) => {
-//   return (data && data.length) ? data.sort(sortBills).map(bill => row(bill)).join("") : ""
-// }
 const rows = (data) => {
   if (data && data.length) {
     data.sort((a, b) => {
-      // console.log(new Date(a.date))
-      // return new Date(b.date) - new Date(a.date)
       return new Date(b.originDate ?? b.date) - new Date(a.originDate ?? a.date)
 
     });

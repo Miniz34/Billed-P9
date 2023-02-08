@@ -48,6 +48,7 @@ export default class {
                 console.log(e, 'for', doc)
                 return {
                   ...doc,
+                  originDate: doc.date,
                   date: doc.date,
                   status: formatStatus(doc.status)
                 }
